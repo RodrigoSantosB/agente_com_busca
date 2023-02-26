@@ -1,8 +1,31 @@
 class World {
     constructor() {
-        let x = floor(Math.random() * 400);
-        let y = floor(Math.random() * 400);
-        this.food = createVector(x, y);
+        this.matriz_terrenos = [
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0]
+        ];
+
+        let cores = ['#bbf0e7', '#95e8da', '#0d917b', '#01382f'];
+        let T = 4;
+        //para cada um dos quadrados
+        for (var i = 0; i < 8; i++) {
+            for (var j = 0; j < 8; j++) {
+                //random entre os 4
+                T = floor(Math.random() * 4);
+                this.matriz_terrenos[i][j] = T;
+                stroke(0);
+                fill(cores[T]);
+                rect(j * 50, i * 50, 50, 50);
+            }
+        }
+
+        this.food = createVector(25 + x * 50, 25 + y * 50);
 
         // Gerar as posições das regiões (obstáculo, fácil, médio, difícil)
         let x1 = floor(Math.random() * 400);
@@ -16,8 +39,6 @@ class World {
         x2 = floor(Math.random() * 400);
         y2 = floor(Math.random() * 400);
         this.easy = [x1, y1, x1, y2, x2, y2, x2, y1]; // Posição central do obstáculo (mudar isso depois)
-
-        console.log(this.obstacle);
     }
 
     getFood() {
@@ -26,11 +47,10 @@ class World {
 
     update() {
         stroke(0);
-        fill(127);
-        circle(this.food.x, this.food.y, 5);
+        fill(255);
+        circle(this.food.x, this.food.y, 8);
         stroke(0);
         fill(168);
-        quad(this.obstacle[0], this.obstacle[1], this.obstacle[2], this.obstacle[3], this.obstacle[4], this.obstacle[5], this.obstacle[6], this.obstacle[7]);
     }
 
     generateWorld() {

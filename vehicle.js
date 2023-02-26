@@ -5,9 +5,9 @@
 
 class Vehicle {
     constructor() {
-        let x = floor(Math.random() * 400);
-        let y = floor(Math.random() * 400);
-        this.pos = createVector(x, y);
+        let x = floor(Math.random() * 8);
+        let y = floor(Math.random() * 8);
+        this.pos = createVector(25 + x * 50, 25 + y * 50);
         this.vel = createVector(0, 0);
         this.acc = createVector(0, 0);
         this.maxSpeed = 4;
@@ -48,13 +48,14 @@ class Vehicle {
     }
 
     show() {
-        stroke(255);
+        stroke(0);
         strokeWeight(2);
         fill(255);
         push();
         translate(this.pos.x, this.pos.y);
         rotate(this.vel.heading());
         triangle(-this.r, -this.r / 2, -this.r, this.r / 2, this.r, 0);
+        //circle(this.pos.x, this.pos.y, this.r)
         pop();
     }
 

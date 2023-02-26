@@ -5,7 +5,7 @@ function setup() {
 }
 
 function draw() {
-    background(220);
+    //background(220);
 
     agent.show();
     agent.update();
