@@ -25,6 +25,12 @@ class World {
             }
         }
 
+        let x = floor(Math.random() * 8);
+        let y = floor(Math.random() * 8);
+        while (this.matriz_terrenos[y][x] == 3) {
+            x = floor(Math.random() * 8);
+            y = floor(Math.random() * 8);
+        }
         this.food = createVector(25 + x * 50, 25 + y * 50);
 
         // Gerar as posições das regiões (obstáculo, fácil, médio, difícil)
