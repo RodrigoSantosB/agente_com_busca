@@ -48,14 +48,15 @@ class Vehicle {
     }
 
     show() {
-        stroke(0);
-        strokeWeight(2);
+        stroke('#d1a162');
+        strokeWeight(3);
         fill(255);
+        circle(this.pos.x, this.pos.y, 25);
         push();
         translate(this.pos.x, this.pos.y);
         rotate(this.vel.heading());
-        triangle(-this.r, -this.r / 2, -this.r, this.r / 2, this.r, 0);
-        //circle(this.pos.x, this.pos.y, this.r)
+        //triangle(-this.r, -this.r / 2, -this.r, this.r / 2, this.r, 0);
+
         pop();
     }
 

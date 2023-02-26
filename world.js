@@ -32,19 +32,6 @@ class World {
             y = floor(Math.random() * 8);
         }
         this.food = createVector(25 + x * 50, 25 + y * 50);
-
-        // Gerar as posições das regiões (obstáculo, fácil, médio, difícil)
-        let x1 = floor(Math.random() * 400);
-        let y1 = floor(Math.random() * 400);
-        let x2 = floor(Math.random() * 400);
-        let y2 = floor(Math.random() * 400);
-        this.obstacle = [x1, y1, x1, y2, x2, y2, x2, y1]; // Posição central do obstáculo (mudar isso depois)
-
-        x1 = floor(Math.random() * 400);
-        y1 = floor(Math.random() * 400);
-        x2 = floor(Math.random() * 400);
-        y2 = floor(Math.random() * 400);
-        this.easy = [x1, y1, x1, y2, x2, y2, x2, y1]; // Posição central do obstáculo (mudar isso depois)
     }
 
     getFood() {
@@ -57,16 +44,5 @@ class World {
         circle(this.food.x, this.food.y, 8);
         stroke(0);
         fill(168);
-    }
-
-    generateWorld() {
-
-        //Configurar retângulo na tela para representar o obstáculo
-
-        x = floor(Math.random() * 400);
-        y = floor(Math.random() * 400);
-        this.obstacle = createVector(x, y); // Posição central do obstáculo?
-        // Gerar a matriz de vértices com os devidos pesos
-        // 
     }
 }
