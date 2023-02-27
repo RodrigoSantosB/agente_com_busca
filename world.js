@@ -39,7 +39,7 @@ class World {
             x = floor(Math.random() * 8);
             y = floor(Math.random() * 8);
         }
-        agent = new Vehicle(25 + x * 50, 25 + y * 50);
+        this.agent = new Vehicle(25 + x * 50, 25 + y * 50);
     }
 
     getFood() {
@@ -52,5 +52,7 @@ class World {
         circle(this.food.x, this.food.y, 8);
         stroke(0);
         fill(168);
+        this.agent.show();
+        this.agent.update();
     }
 }
