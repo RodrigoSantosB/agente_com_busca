@@ -1,5 +1,10 @@
+const BOARD_TILES = 8;
+const BOARD_SIZE = 400;
+const TILE_SIZE = BOARD_SIZE / BOARD_TILES;
+const cores = ['#bbf0e7', '#95e8da', '#0d917b', '#01382f'];
+
 function setup() {
-    createCanvas(400, 400);
+    createCanvas(BOARD_SIZE, BOARD_SIZE);
 
     world = new World();
 }

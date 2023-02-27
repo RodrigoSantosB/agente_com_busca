@@ -74,7 +74,63 @@ class Vehicle {
         }
     }
 
-    Djikstra() {
+    //Djikstra
+    minDistance(D, matrix) {
+        let min = Number.MAX_VALUE;
+        let indexX = -1;
+        let indexY = -1;
+        for (let v = 0; v < BOARD_TILES; v++) {
+            for (let u = 0; u < BOARD_TILES; u++) {
+                if (matrix[v][u] != -1 && dist[v][u] <= min) {
+                    min = dist[v][u];
+                    indexX = v;
+                    indexY = u;
+                }
+            }
+        }
+        return [indexX, indexY];
+    }
+
+    djikstraAux(matrix) {
+        let D = matrix;
+        for (var i = 0; i < BOARD_TILES; i++) {
+            for (var j = 0; j < BOARD_TILES; j++) {
+                D[i][j] = Number.MAX_VALUE;
+            }
+        }
+        let discreteX = (this.pos.x - TILE_SIZE / 2) / TILE_SIZE;
+        let discreteY = (this.pos.y - TILE_SIZE / 2) / TILE_SIZE;
+        console.log(discreteX, discreteY);
+        D[discreteX][discreteY] = 0;
+        matrix[discreteX][discreteY] = 5;
+        setTimeout(() => {
+            stroke(0);
+            strokeWeight(1);
+            fill(50);
+            rect(discreteX * TILE_SIZE, discreteY * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            this.show();
+            this.djikstra(D, matrix);
+        }, 500);
 
     }
+
+    djikstra(D, matrix) {
+        let index = minDistance(D, matrix);
+
+        let Terreno = matrix[index[0]][index[1]]
+
+        matrix[index[0]][index[1]] = 5;
+        stroke(0);
+        strokeWeight(1);
+        fill(50);
+        rect(discreteX * TILE_SIZE, discreteY * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+
+        //atualizar a distância dos vértices adjacentes ( [x+1,y], [x,y+1], [x-1,y], [x,y-1]) com o valor do terreno atual
+        D[index[0] + 1][index[1]] = Terreno;
+        D[index[0]][index[1] + 1] = Terreno;
+        D[index[0] - 1][index[1]] = Terreno;
+        D[index[0]][index[1] - 1] = Terreno;
+
+    }
+
 }
