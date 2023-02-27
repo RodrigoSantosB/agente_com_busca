@@ -7,10 +7,11 @@ function setup() {
     createCanvas(BOARD_SIZE, BOARD_SIZE);
 
     world = new World();
+    world.update();
 }
 
 function draw() {
     //background(220);
 
-    world.update();
+
 }
