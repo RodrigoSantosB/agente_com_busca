@@ -20,7 +20,7 @@ class World {
 
         let x = floor(Math.random() * BOARD_TILES);
         let y = floor(Math.random() * BOARD_TILES);
-        while (this.matriz_terrenos[y][x] == 3) {
+        while (this.matriz_terrenos[x][y] == 3) {
             x = floor(Math.random() * BOARD_TILES);
             y = floor(Math.random() * BOARD_TILES);
         }
@@ -28,11 +28,28 @@ class World {
 
         x = floor(Math.random() * BOARD_TILES);
         y = floor(Math.random() * BOARD_TILES);
-        while (this.matriz_terrenos[y][x] == 3) {
+        while (this.matriz_terrenos[x][y] == 3) {
             x = floor(Math.random() * BOARD_TILES);
             y = floor(Math.random() * BOARD_TILES);
         }
         this.agent = new Vehicle(TILE_SIZE / 2 + x * TILE_SIZE, TILE_SIZE / 2 + y * TILE_SIZE);
+    }
+
+    generateMap() {
+        for (var i = 0; i < BOARD_TILES; i++) {
+            for (var j = 0; j < BOARD_TILES; j++) {
+                //random entre os 4 tipos de terreno
+                stroke(0);
+                fill(cores[this.matriz_terrenos[i][j]]);
+                rect(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            }
+        }
+        stroke(0);
+        fill(255);
+        circle(this.food.x, this.food.y, 16);
+        stroke(0);
+        fill(168);
+        this.agent.show();
     }
 
     getFood() {
@@ -48,7 +65,7 @@ class World {
         fill(168);
         this.agent.show();
 
-        this.djikstraAux();
+        this.djikstraPath();
         this.agent.update();
     }
 
@@ -81,6 +98,15 @@ class World {
 
     async djikstraAux() {
 
+        //Origem para o ponto
+        let origin = new Array(BOARD_TILES);
+        for (var i = 0; i < BOARD_TILES; i++) {
+            origin[i] = new Array(BOARD_TILES).fill(0);
+            for (var j = 0; j < BOARD_TILES; j++) {
+                origin[i][j] = Number.MAX_VALUE;
+            }
+        }
+
         let D = new Array(BOARD_TILES);
         for (var i = 0; i < BOARD_TILES; i++) {
             D[i] = new Array(BOARD_TILES).fill(0);
@@ -112,6 +138,7 @@ class World {
             await this.delay(1000);
             let index = this.minDistance(D, visited);
 
+            // Marca visualmente o ponto já visitado pelo algoritmo
             visited[index[0]][index[1]] = true;
             stroke(0);
             strokeWeight(1);
@@ -124,31 +151,191 @@ class World {
                 break;
             }
 
-            let Terreno = this.matriz_terrenos[index[0]][index[1]];
+            let Terreno;
             //atualizar a distância dos vértices adjacentes ( [x+1,y], [x,y+1], [x-1,y], [x,y-1]) com o valor do terreno atual
             if (index[0] < BOARD_TILES - 1) {
-                Terreno = this.matriz_terrenos[index[0] + 1][index[1]];
-                if (Terreno + D[index[0]][index[1]] < D[index[0] + 1][index[1]])
+                Terreno = this.matriz_terrenos[index[0] + 1][index[1]] * 5;
+                if (Terreno + D[index[0]][index[1]] < D[index[0] + 1][index[1]]) {
                     D[index[0] + 1][index[1]] = Terreno + 1 + D[index[0]][index[1]];
+                    origin[index[0] + 1][index[1]] = [index[0], index[1]];
+                }
             }
             if (index[1] < BOARD_TILES - 1) {
-                Terreno = this.matriz_terrenos[index[0]][index[1] + 1];
-                if (Terreno + D[index[0]][index[1]] < D[index[0]][index[1] + 1])
+                Terreno = this.matriz_terrenos[index[0]][index[1] + 1] * 5;
+                if (Terreno + D[index[0]][index[1]] < D[index[0]][index[1] + 1]) {
                     D[index[0]][index[1] + 1] = Terreno + 1 + D[index[0]][index[1]];
+                    origin[index[0]][index[1] + 1] = [index[0], index[1]];
+                }
             }
             if (index[0] > 0) {
-                Terreno = this.matriz_terrenos[index[0] - 1][index[1]];
-                if (Terreno + D[index[0]][index[1]] < D[index[0] - 1][index[1]])
+                Terreno = this.matriz_terrenos[index[0] - 1][index[1]] * 5;
+                if (Terreno + D[index[0]][index[1]] < D[index[0] - 1][index[1]]) {
                     D[index[0] - 1][index[1]] = Terreno + 1 + D[index[0]][index[1]];
+                    origin[index[0] - 1][index[1]] = [index[0], index[1]];
+                }
             }
             if (index[1] > 0) {
-                Terreno = this.matriz_terrenos[index[0]][index[1] - 1];
-                if (Terreno + D[index[0]][index[1]] < D[index[0]][index[1] - 1])
+                Terreno = this.matriz_terrenos[index[0]][index[1] - 1] * 5;
+                if (Terreno + D[index[0]][index[1]] < D[index[0]][index[1] - 1]) {
                     D[index[0]][index[1] - 1] = Terreno + 1 + D[index[0]][index[1]];
+                    origin[index[0]][index[1] - 1] = [index[0], index[1]];
+                }
             }
-            console.log(D);
+        }
+    }
 
+    async djikstraPath() {
+        let pq = [];
+
+        //Origem para o ponto
+        let origin = new Array(BOARD_TILES);
+        for (var i = 0; i < BOARD_TILES; i++) {
+            origin[i] = new Array(BOARD_TILES).fill(0);
+            for (var j = 0; j < BOARD_TILES; j++) {
+                origin[i][j] = Number.MAX_VALUE;
+            }
         }
 
+        // Cria o array com os menores caminhos para cada ponto
+        let D = new Array(BOARD_TILES);
+        for (var i = 0; i < BOARD_TILES; i++) {
+            D[i] = new Array(BOARD_TILES).fill(0);
+            for (var j = 0; j < BOARD_TILES; j++) {
+                D[i][j] = Number.MAX_VALUE;
+            }
+        }
+
+        // Cria o array que indica caso aquele ponto já tenha sido visitado para cada ponto
+        let visited = new Array(BOARD_TILES);
+        for (var i = 0; i < BOARD_TILES; i++) {
+            visited[i] = new Array(BOARD_TILES).fill(0);
+            for (var j = 0; j < BOARD_TILES; j++) {
+                visited[i][j] = false;
+            }
+        }
+
+        // Pega a posição discreta do agente
+        let discreteX = (this.agent.pos.x - TILE_SIZE / 2) / TILE_SIZE;
+        let discreteY = (this.agent.pos.y - TILE_SIZE / 2) / TILE_SIZE;
+
+        pq.push([0, discreteX, discreteY]);
+        D[discreteX][discreteY] = 0;
+        origin[discreteX][discreteY] = [-1, -1];
+
+        stroke(0);
+        strokeWeight(1);
+        fill(50);
+        rect(discreteX * TILE_SIZE, discreteY * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+        this.agent.show();
+
+        while (pq.length > 0) {
+            pq.shift();
+
+            await this.delay(100);
+            let index = this.minDistance(D, visited);
+
+            visited[index[0]][index[1]] = true;
+            stroke(0);
+            strokeWeight(1);
+            fill(50);
+            rect(index[0] * TILE_SIZE, index[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            this.agent.show();
+
+            if ((this.food.x == TILE_SIZE / 2 + index[0] * TILE_SIZE) && (this.food.y == TILE_SIZE / 2 + index[1] * TILE_SIZE)) {
+                console.log("Achei: ", index);
+                this.found = index;
+                break;
+            }
+
+            let Terreno = this.matriz_terrenos[index[0]][index[1]] * 5;
+            //atualizar a distância dos vértices adjacentes ( [x+1,y], [x,y+1], [x-1,y], [x,y-1]) com o valor do terreno atual
+            if (index[0] < BOARD_TILES - 1) {
+                Terreno = this.matriz_terrenos[index[0] + 1][index[1]] * 5;
+                if (Terreno + D[index[0]][index[1]] < D[index[0] + 1][index[1]]) {
+                    D[index[0] + 1][index[1]] = Terreno + 1 + D[index[0]][index[1]];
+                    origin[index[0] + 1][index[1]] = [index[0], index[1]];
+                    pq.push([D[index[0] + 1][index[1]],
+                        [index[0] + 1],
+                        [index[1]]
+                    ]);
+                    pq.sort((a, b) => {
+                        if (a[0] == b[0]) return a[1] - b[1];
+                        return a[0] - b[0];
+                    });
+                }
+            }
+            if (index[1] < BOARD_TILES - 1) {
+                Terreno = this.matriz_terrenos[index[0]][index[1] + 1] * 5;
+                if (Terreno + D[index[0]][index[1]] < D[index[0]][index[1] + 1]) {
+                    D[index[0]][index[1] + 1] = Terreno + 1 + D[index[0]][index[1]];
+                    origin[index[0]][index[1] + 1] = [index[0], index[1]];
+                    pq.push([D[index[0]][index[1] + 1],
+                        [index[0]],
+                        [index[1] + 1]
+                    ]);
+                    pq.sort((a, b) => {
+                        if (a[0] == b[0]) return a[1] - b[1];
+                        return a[0] - b[0];
+                    });
+                }
+            }
+            if (index[0] > 0) {
+                Terreno = this.matriz_terrenos[index[0] - 1][index[1]] * 5;
+                if (Terreno + D[index[0]][index[1]] < D[index[0] - 1][index[1]]) {
+                    D[index[0] - 1][index[1]] = Terreno + 1 + D[index[0]][index[1]];
+                    origin[index[0] - 1][index[1]] = [index[0], index[1]];
+                    pq.push([D[index[0] - 1][index[1]],
+                        [index[0] - 1],
+                        [index[1]]
+                    ]);
+                    pq.sort((a, b) => {
+                        if (a[0] == b[0]) return a[1] - b[1];
+                        return a[0] - b[0];
+                    });
+                }
+            }
+            if (index[1] > 0) {
+                Terreno = this.matriz_terrenos[index[0]][index[1] - 1] * 5;
+                if (Terreno + D[index[0]][index[1]] < D[index[0]][index[1] - 1]) {
+                    D[index[0]][index[1] - 1] = Terreno + 1 + D[index[0]][index[1]];
+                    origin[index[0]][index[1] - 1] = [index[0], index[1]];
+                    pq.push([D[index[0]][index[1] - 1],
+                        [index[0]],
+                        [index[1] - 1]
+                    ]);
+                    pq.sort((a, b) => {
+                        if (a[0] == b[0]) return a[1] - b[1];
+                        return a[0] - b[0];
+                    });
+                }
+            }
+        }
+
+        console.log("Achei ele, a posição é: ", this.found);
+        let point = this.found;
+        console.log("O caminho é: ");
+        while (point[0] != -1) {
+            console.log(point);
+            this.agent.path.push(point);
+            point = origin[point[0]][point[1]];
+        }
+        background(220);
+        stroke(0);
+        strokeWeight(1);
+        this.generateMap();
+        await this.delay(500);
+        for (let index of this.agent.path) {
+            stroke(0);
+            strokeWeight(3);
+            fill(cores[this.matriz_terrenos[index[0]][index[1]]])
+            rect(index[0] * TILE_SIZE, index[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            this.agent.show();
+        }
+        stroke(0);
+        strokeWeight(2);
+        fill(255);
+        circle(this.food.x, this.food.y, 16);
+
+        console.log(origin);
     }
 }

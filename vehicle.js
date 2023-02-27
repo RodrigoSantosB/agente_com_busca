@@ -12,6 +12,8 @@ class Vehicle {
         this.maxSpeed = 4;
         this.maxForce = 0.25;
         this.r = 16;
+
+        this.path = [];
     }
 
     seek(target) {
