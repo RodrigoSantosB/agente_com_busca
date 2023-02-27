@@ -52,5 +52,7 @@ class World {
         circle(this.food.x, this.food.y, 8);
         stroke(0);
         fill(168);
+        agent.show();
+        agent.update();
     }
 }
