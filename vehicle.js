@@ -4,10 +4,9 @@
 // Pursue: https://editor.p5js.org/codingtrain/sketches/XbsgoU_of
 
 class Vehicle {
-    constructor() {
-        let x = floor(Math.random() * 8);
-        let y = floor(Math.random() * 8);
-        this.pos = createVector(25 + x * 50, 25 + y * 50);
+    constructor(x, y) {
+
+        this.pos = createVector(x, y);
         this.vel = createVector(0, 0);
         this.acc = createVector(0, 0);
         this.maxSpeed = 4;
@@ -33,6 +32,8 @@ class Vehicle {
             this.count += 1;
             console.log("Comidas coletadas: " + this.count);
         }
+
+
     }
 
     applyForce(force) {
@@ -71,5 +72,9 @@ class Vehicle {
         } else if (this.pos.y < -this.r) {
             this.pos.y = height + this.r;
         }
+    }
+
+    Djikstra() {
+
     }
 }
